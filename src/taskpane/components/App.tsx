@@ -1,24 +1,37 @@
 import * as React from "react";
-import { FluentProvider, webLightTheme } from "@fluentui/react-components";
-import DeckCheckCard from "./DeckCheckCard";
+import {
+  FluentProvider,
+  webLightTheme,
+  TabList,
+  Tab,
+  TabValue,
+} from "@fluentui/react-components";
 import SlideDataAccordion from "./SlideDataAccordion";
+import { Loading } from "./RefreshButton";
+import { Aside } from "./Tree";
+import { analyzeFonts, FontWordCount } from "./font_functions/analyzeFont";
+import { analyzeFontSizes, FontSizeCount } from "./font_functions/analyzeFontSizes";
+import { analyzeFontColors, FontColorCount } from "./font_functions/analyzeFontColors";
 
 export interface FontStats {
-  [key: string]: number;        // p. ej.  "Calibri" → 20
+  [key: string]: number;
 }
 
 export interface SlideStats {
   fonts: FontStats;
-  colors: FontStats;            // hex o RGB → conteo
-  sizes: FontStats;             // "14 pt" → conteo
+  colors: FontStats;
+  sizes: FontStats;
 }
 
 const initialStats: SlideStats = { fonts: {}, colors: {}, sizes: {} };
 
 const App: React.FC = () => {
   const [stats, setStats] = React.useState<SlideStats>(initialStats);
+  const [fontStats, setFontStats] = React.useState<FontWordCount>({});
+  const [sizeStats, setSizeStats] = React.useState<FontSizeCount>({});
+  const [colorStats, setColorStats] = React.useState<FontColorCount>({});
+  const [selectedTab, setSelectedTab] = React.useState<TabValue>("summary");
 
-  /** Cuenta ocurrencias incrementando el diccionario destino */
   const addCount = (dict: FontStats, key: string | number | undefined) => {
     if (!key) return;
     const k = String(key);
@@ -32,7 +45,6 @@ const App: React.FC = () => {
         slides.load("items");
         await context.sync();
 
-        // Diccionarios locales de conteo
         const fonts: FontStats = {};
         const colors: FontStats = {};
         const sizes: FontStats = {};
@@ -43,7 +55,6 @@ const App: React.FC = () => {
         }
         await context.sync();
 
-        // Itera por todas las formas con texto
         for (const slide of slides.items) {
           for (const shape of slide.shapes.items) {
             const tr = shape.textFrame?.textRange;
@@ -65,13 +76,23 @@ const App: React.FC = () => {
 
         setStats({ fonts, colors, sizes });
       });
+
+      const analyzedFonts = await analyzeFonts();
+      const analyzedSizes = await analyzeFontSizes();
+      const analyzedColors = await analyzeFontColors();
+
+      setFontStats(analyzedFonts);
+      setSizeStats(analyzedSizes);
+      setColorStats(analyzedColors);
     } catch (err) {
       console.error("Error reading slides", err);
       setStats(initialStats);
+      setFontStats({});
+      setSizeStats({});
+      setColorStats({});
     }
   }, []);
 
-  // Cargar al iniciar
   React.useEffect(() => {
     if ((window as any).Office?.initialized) refreshStats();
     else (window as any).Office?.onReady?.(() => refreshStats());
@@ -79,9 +100,30 @@ const App: React.FC = () => {
 
   return (
     <FluentProvider theme={webLightTheme}>
-      <DeckCheckCard onRefresh={refreshStats}>
-        <SlideDataAccordion data={stats} />
-      </DeckCheckCard>
+      <div style={{ padding: 20 }}>
+        <TabList selectedValue={selectedTab} onTabSelect={(_, data) => setSelectedTab(data.value)} size="small">
+          <Tab value="summary">Resumen</Tab>
+          <Tab value="tree">Análisis de texto</Tab>
+          <Tab value="extras">Otra sección</Tab>
+        </TabList>
+
+        {selectedTab === "summary" && (
+          <SlideDataAccordion data={stats} />
+        )}
+
+        {selectedTab === "tree" && (
+          <>
+            <Loading onRefresh={refreshStats} />
+            <Aside fontStats={fontStats} sizeStats={sizeStats} colorStats={colorStats} />
+          </>
+        )}
+
+        {selectedTab === "extras" && (
+          <div>
+            <p>Contenido adicional aquí...</p>
+          </div>
+        )}
+      </div>
     </FluentProvider>
   );
 };
