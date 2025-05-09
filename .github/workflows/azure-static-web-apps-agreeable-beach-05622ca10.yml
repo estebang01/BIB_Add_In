@@ -22,7 +22,11 @@ jobs:
 
       - name: Fix Git Config Permissions
         run: |
-          chmod -R u+w .git
+          sudo chmod u+w ~/.gitconfig
+          
+      - name: Mark current directory as safe for Git
+        run: |
+          git config --global --add safe.directory $(pwd)
 
       - name: Build And Deploy
         id: builddeploy
