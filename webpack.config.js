@@ -4,6 +4,7 @@ const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
+const path = require('path');
 
 const urlDev = "https://localhost:3000/";
 const urlProd = "https://agreeable-beach-05622ca10.6.azurestaticapps.net/";
@@ -69,15 +70,16 @@ module.exports = async (env, options) => {
         template: "./src/taskpane/taskpane.html",
         chunks: ["polyfill", "taskpane", "react"],
       }),
+      new HtmlWebpackPlugin({
+        filename: "index.html",
+        template: "./index.html",
+        chunks: ["polyfill", "react"],
+      }),
       new CopyWebpackPlugin({
         patterns: [
           {
             from: "assets/*",
             to: "assets/[name][ext][query]",
-          },
-          {
-            from: "index.html",
-            to: "index.html",
           },
           {
             from: "manifest*.xml",

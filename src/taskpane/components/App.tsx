@@ -11,6 +11,9 @@ import { Aside } from "./Tree";
 import { analyzeFonts, FontWordCount } from "./font_functions/analyzeFont";
 import { analyzeFontSizes, FontSizeCount } from "./font_functions/analyzeFontSizes";
 import { analyzeFontColors, FontColorCount } from "./font_functions/analyzeFontColors";
+import SlideReviewApp from "./SlideReviewApp"; // Removed as it is unused and missing
+
+
 
 export interface FontStats {
   [key: string]: number;
@@ -92,10 +95,21 @@ const App: React.FC = () => {
     }
   }, []);
 
-  React.useEffect(() => {
-    if ((window as any).Office?.initialized) refreshStats();
-    else (window as any).Office?.onReady?.(() => refreshStats());
-  }, [refreshStats]);
+React.useEffect(() => {
+  // 1. Inicialización de Office JS
+  if ((window as any).Office?.initialized) refreshStats();
+  else (window as any).Office?.onReady?.(() => refreshStats());
+
+  // 2. Comunicación VSTO → React
+  (window as any).initializeDataFromVSTO = (slidesData: any[]) => {
+    console.log("📩 Recibido desde VSTO:", slidesData);
+    alert(`Recibidas ${slidesData.length} diapositivas desde VSTO`);
+
+    // Si quieres pasar los datos a SlideReviewApp, puedes usar un store global o contexto
+    // Por ahora solo lo mostramos
+  };
+}, [refreshStats]);
+
 
   return (
     <FluentProvider theme={webLightTheme}>
@@ -103,12 +117,29 @@ const App: React.FC = () => {
         <TabList selectedValue={selectedTab} onTabSelect={(_, data) => setSelectedTab(data.value)} size="small">
           <Tab value="summary">Resumen</Tab>
           <Tab value="tree">Análisis de texto</Tab>
+          <Tab value="revision">Revisión</Tab>
           <Tab value="extras">Otra sección</Tab>
         </TabList>
 
         {selectedTab === "summary" && (
           <div>
-          <p>Contenido adicional aquí...</p>
+          <button
+            onClick={() => {
+              const message = {
+                action: "fixIssue",
+                data: {
+                  slideId: "slide_256",
+                  issueId: 1,
+                  willBeFixed: true,
+                  type: "error",
+                  elementId: "title"
+                }
+              };
+              (window as any).chrome?.webview?.postMessage(JSON.stringify(message));
+            }}
+          >
+            Probar mensaje a VSTO
+          </button>
         </div>
         )}
 
@@ -117,6 +148,9 @@ const App: React.FC = () => {
             <Loading onRefresh={refreshStats} />
             <Aside fontStats={fontStats} sizeStats={sizeStats} colorStats={colorStats} />
           </>
+        )}
+        {selectedTab === "revision" && (
+          <SlideReviewApp />
         )}
 
         {selectedTab === "extras" && (
