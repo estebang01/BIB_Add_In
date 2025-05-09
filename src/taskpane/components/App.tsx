@@ -6,7 +6,6 @@ import {
   Tab,
   TabValue,
 } from "@fluentui/react-components";
-import SlideDataAccordion from "./SlideDataAccordion";
 import { Loading } from "./RefreshButton";
 import { Aside } from "./Tree";
 import { analyzeFonts, FontWordCount } from "./font_functions/analyzeFont";
@@ -108,7 +107,9 @@ const App: React.FC = () => {
         </TabList>
 
         {selectedTab === "summary" && (
-          <SlideDataAccordion data={stats} />
+          <div>
+          <p>Contenido adicional aquí...</p>
+        </div>
         )}
 
         {selectedTab === "tree" && (
