@@ -6,7 +6,8 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://agreeable-beach-05622ca10.6.azurestaticapps.net/";
+
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -27,6 +28,8 @@ module.exports = async (env, options) => {
       commands: "./src/commands/commands.ts",
     },
     output: {
+      path: require("path").resolve(__dirname, "dist"),
+      filename: "[name].bundle.js",
       clean: true,
     },
     resolve: {
