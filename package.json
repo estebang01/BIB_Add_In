@@ -11,21 +11,26 @@
     "app_type_to_debug": "desktop",
     "dev_server_port": 3000
   },
-  "scripts": {
-    "build": "webpack --mode production",
-    "build:css": "tailwindcss-cli -i ./src/index.css -o ./dist/tailwindcss.css --minify",
-    "build:dev": "webpack --mode development",
-    "dev-server": "webpack serve --mode development",
-    "lint": "office-addin-lint check",
-    "lint:fix": "office-addin-lint fix",
-    "prettier": "office-addin-lint prettier",
-    "signin": "office-addin-dev-settings m365-account login",
-    "signout": "office-addin-dev-settings m365-account logout",
-    "start": "office-addin-debugging start manifest.xml",
-    "stop": "office-addin-debugging stop manifest.xml",
-    "validate": "office-addin-manifest validate manifest.xml",
-    "watch": "webpack --mode development --watch"
-  },
+"scripts": {
+  "start": "webpack serve --mode development",                  
+  "watch": "webpack --mode development --watch",
+
+
+  "addin:stop": "office-addin-debugging stop manifest.xml",
+
+
+  "build": "webpack --mode production",
+  "build:css": "tailwindcss-cli -i ./src/index.css -o ./dist/tailwindcss.css --minify",
+
+
+  "lint": "office-addin-lint check",
+  "lint:fix": "office-addin-lint fix",
+  "validate": "office-addin-manifest validate manifest.xml",
+
+
+  "signin": "office-addin-dev-settings m365-account login",
+  "signout": "office-addin-dev-settings m365-account logout"
+},
   "dependencies": {
     "@fluentui/react-components": "^9.63.0",
     "@fluentui/react-icons": "^2.0.298",

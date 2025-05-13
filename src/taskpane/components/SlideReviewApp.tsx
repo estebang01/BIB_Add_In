@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { AlertCircle, RefreshCw, Wrench, Settings, AlertTriangle, Search, Check, ChevronDown } from 'lucide-react';
 import {styles} from '../styles';
+import {NotificationCard} from './components_notifications/NotificationCard';
 
 // Componente principal
 export default function SlideReviewApp() {
@@ -37,116 +38,58 @@ export default function SlideReviewApp() {
       notification.id === id ? { ...notification, fixed: !notification.fixed } : notification
     ));
   };
+  const errorCount = notifications.filter((n) => n.type === "error").length;
+  const warningCount = notifications.filter((n) => n.type === "warning").length;
+  const infoCount = notifications.filter((n) => n.type === "info").length;
 
-  return (
-    <div style={styles.container as React.CSSProperties}>
-      {/* Barra de navegación superior */}
-      <div style={styles.navbar}>
-        <div style={styles.buttonGroup}>
-          <button style={styles.iconButton}>
-            <RefreshCw size={20} />
-          </button>
-          <button style={styles.iconButton}>
-            <AlertTriangle size={20} />
-          </button>
-          <button style={styles.iconButton}>
-            <Wrench size={20} />
-          </button>
-        </div>
-        <div style={styles.buttonGroup}>
-          <button style={styles.iconButton}>
-            <Search size={20} />
-          </button>
-          <button style={styles.iconButton}>
-            <Check size={20} color="orange" />
-          </button>
-          <button style={styles.iconButton}>
-            <Check size={20} color="green" />
-          </button>
-          <button style={styles.iconButton}>
-            <Check size={20} color="blue" />
-          </button>
-          <button style={styles.iconButton}>
-            <Settings size={20} />
-          </button>
-        </div>
-      </div>
+  const [hoverStates, setHoverStates] = useState({ header: false });
 
-      {/* Sección de diapositivas */}
-      <div style={styles.slideHeader}>
-        <div 
-          style={styles.slideTitle} 
-          onClick={() => setExpanded(!expanded)}
-        >
-          <ChevronDown 
-            size={16} 
+return (
+  <div style={styles.container as React.CSSProperties}>
+    {/* Encabezado con contador y toggle */}
+    <div
+      style={{
+        ...styles.slideHeader,
+        ...(hoverStates?.header ? styles.slideHeaderHover : {})
+      }}
+      onMouseEnter={() => setHoverStates({ ...hoverStates, header: true })}
+      onMouseLeave={() => setHoverStates({ ...hoverStates, header: false })}
+      onClick={() => setExpanded(!expanded)}
+    >
+      <div style={styles.slideTitle}>
+        <div style={styles.slideLeft}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          {/*Incono* de toggle*/}
+          <ChevronDown
+            size={16}
             style={{
               ...styles.chevron,
               ...(expanded ? {} : styles.chevronCollapsed)
-            }} 
-          />
-          <div style={styles.titleText}>Slide 1</div>
-          <div style={styles.countContainer}>
-            <span style={{...styles.countBadge, ...styles.redBadge}}>1</span>
-            <span style={{...styles.countBadge, ...styles.yellowBadge}}>2</span>
-            <span style={{...styles.countBadge, ...styles.blueBadge}}>0</span>
+            }}
+          /> 
+          <span style={styles.titleText}>Slide 1</span>
           </div>
         </div>
-      </div>
-
-      {/* Contenido expandible */}
-      {expanded && (
-        <div style={styles.notificationsContainer as React.CSSProperties}>
-          {notifications.map((notification) => (
-            <NotificationCard 
-              key={notification.id}
-              notification={notification}
-              onFixClick={() => toggleFixNotification(notification.id)}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Componente de tarjeta de notificación
-function NotificationCard({ notification, onFixClick }) {
-  const Icon = notification.icon;
-  
-  const cardStyle = {
-    ...styles.notificationCard,
-    ...(notification.type === 'error' ? styles.errorCard : 
-        notification.type === 'warning' ? styles.warningCard : 
-        styles.infoCard)
-  };
-
-  const circleStyle = {
-    ...styles.iconCircle,
-    ...(notification.type === 'error' ? styles.redCircle : 
-        notification.type === 'warning' ? styles.yellowCircle : 
-        styles.blueCircle)
-  };
-
-  return (
-    <div style={cardStyle}>
-      <div style={styles.iconContainer}>
-        <div style={circleStyle}>
-          <Icon size={18} />
-        </div>
-      </div>
-      <div style={styles.contentContainer}>
-        <h3 style={styles.notificationTitle}>{notification.title}</h3>
-        <p style={styles.notificationDescription}>{notification.description}</p>
-      </div>
-      <div>
-        <button 
-          style={styles.actionButton}
-          onClick={onFixClick}
-        >
-          {notification.fixed ? <RefreshCw size={20} /> : <Settings size={20} />}
-        </button>
+          <div style={styles.countSummary}>
+            <div style={{ ...styles.circleBadge, backgroundColor: "#ef4444" }}>{errorCount}</div>
+            <div style={{ ...styles.circleBadge, backgroundColor: "#f59e0b" }}>{warningCount}</div>
+            <div style={{ ...styles.circleBadge, backgroundColor: "#3b82f6" }}>{infoCount}</div>
+          </div>
       </div>
     </div>
-  );
+
+    {/* Contenido expandible */}
+    {expanded && (
+      <div style={styles.notificationsContainer as React.CSSProperties}>
+        {notifications.map((notification) => (
+          <NotificationCard
+            key={notification.id}
+            notification={notification}
+            onFixClick={() => toggleFixNotification(notification.id)}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+);
 }

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import {
   FluentProvider,
   webLightTheme,
@@ -12,8 +12,11 @@ import { analyzeFonts, FontWordCount } from "./font_functions/analyzeFont";
 import { analyzeFontSizes, FontSizeCount } from "./font_functions/analyzeFontSizes";
 import { analyzeFontColors, FontColorCount } from "./font_functions/analyzeFontColors";
 import SlideReviewApp from "./SlideReviewApp"; // Removed as it is unused and missing
-
-
+import  DeckCheck  from "./DeckCheck";
+import {Navbar} from "./components_validacion/Navbar";
+import  SlideReceiver  from "../helpers/SlideReceiver";
+import { SlideInfo } from "../helpers/vstoBridge1";
+import { useEffect } from "react";
 
 export interface FontStats {
   [key: string]: number;
@@ -27,18 +30,21 @@ export interface SlideStats {
 
 const initialStats: SlideStats = { fonts: {}, colors: {}, sizes: {} };
 
+
 const App: React.FC = () => {
   const [stats, setStats] = React.useState<SlideStats>(initialStats);
   const [fontStats, setFontStats] = React.useState<FontWordCount>({});
   const [sizeStats, setSizeStats] = React.useState<FontSizeCount>({});
   const [colorStats, setColorStats] = React.useState<FontColorCount>({});
   const [selectedTab, setSelectedTab] = React.useState<TabValue>("summary");
+  const [revisionView, setRevisionView] = React.useState<"slide" | "deck">("slide");
 
   const addCount = (dict: FontStats, key: string | number | undefined) => {
     if (!key) return;
     const k = String(key);
     dict[k] = (dict[k] ?? 0) + 1;
   };
+const [dummyData, setDummyData] = React.useState<any[]>([]);
 
   const refreshStats = React.useCallback(async () => {
     try {
@@ -95,21 +101,32 @@ const App: React.FC = () => {
     }
   }, []);
 
-React.useEffect(() => {
-  // 1. Inicialización de Office JS
-  if ((window as any).Office?.initialized) refreshStats();
-  else (window as any).Office?.onReady?.(() => refreshStats());
+const [slidesInfo, setSlidesInfo] = useState<SlideInfo[]>([]);
 
-  // 2. Comunicación VSTO → React
-  (window as any).initializeDataFromVSTO = (slidesData: any[]) => {
-    console.log("📩 Recibido desde VSTO:", slidesData);
-    alert(`Recibidas ${slidesData.length} diapositivas desde VSTO`);
 
-    // Si quieres pasar los datos a SlideReviewApp, puedes usar un store global o contexto
-    // Por ahora solo lo mostramos
+useEffect(() => {
+  const handleWebViewMessage = (event: any) => {
+    if (!event || !event.data) return;
+
+    const { action, data } = event.data;
+
+    if (action === "allSlidesReceived") {
+      console.log("✅ SlideInfo recibido:", data);
+      setSlidesInfo(data); // actualiza el estado
+    }
   };
-}, [refreshStats]);
 
+  if ((window as any).chrome?.webview) {
+    (window as any).chrome.webview.addEventListener("message", handleWebViewMessage);
+  }
+
+  // Limpieza
+  return () => {
+    if ((window as any).chrome?.webview) {
+      (window as any).chrome.webview.removeEventListener("message", handleWebViewMessage);
+    }
+  };
+}, []);
 
   return (
     <FluentProvider theme={webLightTheme}>
@@ -119,28 +136,82 @@ React.useEffect(() => {
           <Tab value="tree">Análisis de texto</Tab>
           <Tab value="revision">Revisión</Tab>
           <Tab value="extras">Otra sección</Tab>
+          <Tab value="Prueba1">Otra sección</Tab>
         </TabList>
-
+        {selectedTab === "Prueba1" && (
+         <button onClick={() => {
+            (window as any).chrome?.webview?.postMessage({
+              action: "getActiveSlideInfo",
+              data:{}
+            });
+          }}>
+            Obtener información de la diapositiva
+          </button>)}
         {selectedTab === "summary" && (
-          <div>
-          <button
-            onClick={() => {
-              const message = {
-                action: "fixIssue",
-                data: {
-                  slideId: "slide_256",
-                  issueId: 1,
-                  willBeFixed: true,
-                  type: "error",
-                  elementId: "title"
-                }
-              };
-              (window as any).chrome?.webview?.postMessage(JSON.stringify(message));
-            }}
-          >
-            Probar mensaje a VSTO
-          </button>
-        </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {/* Componente que obtiene y entrega info de VSTO */}
+            <SlideReceiver
+              onSlideInfoReceived={(info) => {
+                setSlidesInfo(info);
+              }}
+            />
+
+            {/* Mostrar las diapositivas y sus elementos */}
+            {slidesInfo.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "32px", marginTop: "24px" }}>
+                {slidesInfo.map((slide) => (
+                  <div key={slide.slideNumber}>
+                    <h3 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "12px" }}>
+                      Diapositiva {slide.slideNumber}: {slide.slideTitle}
+                    </h3>
+
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "16px" }}>
+                      {slide.elements?.map((element) => (
+                        <div
+                          key={element.id}
+                          style={{
+                            padding: "16px",
+                            border: "1px solid #ccc",
+                            borderRadius: "8px",
+                            backgroundColor: "#fff",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                            width: "calc(50% - 8px)",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          <h4 style={{ fontSize: "14px", fontWeight: "bold", marginBottom: "8px" }}>
+                            Elemento #{element.id} – {element.type}
+                          </h4>
+                          <p><strong>Nombre:</strong> {element.name}</p>
+                          <p><strong>Posición:</strong> ({element.left}, {element.top})</p>
+                          <p><strong>Tamaño:</strong> {element.width} × {element.height}</p>
+                          {element.text?.content && (
+                            <p><strong>Texto:</strong> {element.text.content}</p>
+                          )}
+                          {element.fill?.color && (
+                            <p>
+                              <strong>Color de relleno:</strong>{" "}
+                              <span
+                                style={{
+                                  backgroundColor: `#${element.fill.color}`,
+                                  display: "inline-block",
+                                  width: "12px",
+                                  height: "12px",
+                                  borderRadius: "3px",
+                                  marginLeft: "4px",
+                                  verticalAlign: "middle"
+                                }}
+                              ></span>
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {selectedTab === "tree" && (
@@ -150,17 +221,30 @@ React.useEffect(() => {
           </>
         )}
         {selectedTab === "revision" && (
-          <SlideReviewApp />
+          <>
+            <Navbar
+              onButtonClick={(button) => {
+                if (button === "deck") setRevisionView("deck");
+                if (button === "slide") setRevisionView("slide");
+                if (button === "refresh") refreshStats(); // si quieres mantener refres
+              }}
+              searchTerm=""
+              setSearchTerm={() => {}}
+                activeView={revisionView} 
+            />
+            {revisionView === "deck" && <DeckCheck />}
+            {revisionView === "slide" && <SlideReviewApp />}
+          </>
         )}
+
 
         {selectedTab === "extras" && (
           <div>
-            <p>Contenido adicional aquí...</p>
+            <DeckCheck />
           </div>
         )}
       </div>
     </FluentProvider>
   );
 };
-
 export default App;
