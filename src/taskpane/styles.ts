@@ -255,7 +255,8 @@ slideHeaderButtonCounterText:{
   },
   iconContainer: {
     marginRight: '12px',
-    marginTop: '4px'
+    marginTop: '4px',
+    flexShrink: 0,
   },
   iconCircle: iconCircleBase,
   redCircle: {
@@ -268,7 +269,9 @@ slideHeaderButtonCounterText:{
     backgroundColor: '#3b82f6'
   },
   contentContainer: {
-    flexGrow: 1
+    flex: 1,
+    minWidth: '0',
+    wordBreak: 'break-word',
   },
   notificationTitle: {
     fontWeight: '500',
