@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import App from "./components/App";
+import App from "./components/App_1"; // Cambiar a App.tsx cuando esté listo
+
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 
 /* global document, Office, module, require, HTMLElement */

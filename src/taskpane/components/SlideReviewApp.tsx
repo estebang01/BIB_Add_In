@@ -9,25 +9,25 @@ export default function SlideReviewApp() {
   const [notifications, setNotifications] = useState([
     { 
       id: 1, 
-      type: 'error', 
-      title: 'Slide title missing', 
-      description: 'This slide has a title placeholder that contains no text', 
+      type: 'warning', 
+      title: 'Subtítulo vacío', 
+      description: 'Esta slide tiene un placeholder de subtítulo vacío, lo que puede afectar la comprensión del contenido', 
       icon: AlertCircle, 
       fixed: false 
     },
     { 
       id: 2, 
-      type: 'warning', 
-      title: 'Shrink text on overflow', 
-      description: 'Shrinking text on overflow can result in unpredictable and inconsistent font sizes', 
+      type: 'error', 
+      title: 'Texto fuera de los márgenes', 
+      description: 'El texto de esta slide se extiende más allá de los márgenes establecidos, lo que puede dificultar la lectura', 
       icon: Wrench, 
       fixed: false 
     },
     { 
       id: 3, 
-      type: 'warning', 
-      title: 'Shrink text on overflow', 
-      description: 'Shrinking text on overflow can result in unpredictable and inconsistent font sizes', 
+      type: 'info', 
+      title: 'Leyenda de gráfico', 
+      description: 'Leyenda del gráfico no está presente, lo que puede dificultar la interpretación de los datos', 
       icon: Wrench, 
       fixed: false 
     }
