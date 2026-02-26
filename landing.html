@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIB — Landing Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+    .footer-link {
+      transition: opacity 0.2s ease;
+    }
+    .footer-link:hover {
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body class="bg-black">
+
+  <!-- =============================================
+       LANDING PAGE FOOTER
+  ============================================= -->
+  <footer class="relative bg-[#0A0A0A] text-[#E8E8E8] overflow-hidden">
+
+    <!-- Background Watermark -->
+    <span
+      aria-hidden="true"
+      class="pointer-events-none select-none absolute bottom-0 left-1/2 -translate-x-1/2 text-[20vw] font-black uppercase tracking-tighter leading-none text-white opacity-[0.03] whitespace-nowrap"
+    >
+      BIB
+    </span>
+
+    <!-- Top Row -->
+    <div class="relative z-10 flex items-start justify-between px-8 pt-16 pb-4 md:px-16 md:pt-20">
+      <!-- Logo + Location -->
+      <div class="flex flex-col gap-1">
+        <span class="text-2xl font-bold tracking-tight text-white">BIB</span>
+        <span class="text-sm text-[#888] font-light">New York, NY</span>
+      </div>
+
+      <!-- Hamburger (mobile only) -->
+      <button
+        class="md:hidden flex flex-col gap-[5px] justify-center items-end p-2 focus:outline-none"
+        aria-label="Open menu"
+      >
+        <span class="block w-6 h-[1.5px] bg-[#E8E8E8]"></span>
+        <span class="block w-4 h-[1.5px] bg-[#E8E8E8]"></span>
+        <span class="block w-5 h-[1.5px] bg-[#E8E8E8]"></span>
+      </button>
+    </div>
+
+    <!-- Divider -->
+    <div class="relative z-10 mx-8 md:mx-16 border-t border-[#1E1E1E]"></div>
+
+    <!-- Main Footer Grid -->
+    <div class="relative z-10 grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-12 px-8 py-14 md:px-16 md:py-20">
+
+      <!-- Column 1: Services -->
+      <nav aria-label="Services">
+        <h3 class="text-xs font-semibold uppercase tracking-[0.15em] text-[#666] mb-6">
+          Services
+        </h3>
+        <ul class="flex flex-col gap-4">
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Learn
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Sell
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Buyer Network
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Column 2: Tools -->
+      <nav aria-label="Tools">
+        <h3 class="text-xs font-semibold uppercase tracking-[0.15em] text-[#666] mb-6">
+          Tools
+        </h3>
+        <ul class="flex flex-col gap-4">
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Find Buyers
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Valuation Tool
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Market Comps
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Column 3: Resources -->
+      <nav aria-label="Resources">
+        <h3 class="text-xs font-semibold uppercase tracking-[0.15em] text-[#666] mb-6">
+          Resources
+        </h3>
+        <ul class="flex flex-col gap-4">
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              About
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Careers
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]">
+              Blog
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Column 4: Social -->
+      <nav aria-label="Social">
+        <h3 class="text-xs font-semibold uppercase tracking-[0.15em] text-[#666] mb-6">
+          Social
+        </h3>
+        <ul class="flex flex-col gap-4">
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]" rel="noopener noreferrer" target="_blank">
+              LinkedIn
+            </a>
+          </li>
+          <li>
+            <a href="#" class="footer-link text-[15px] font-medium text-[#D4D4D4]" rel="noopener noreferrer" target="_blank">
+              X
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+    </div>
+
+    <!-- Bottom Legal Bar -->
+    <div class="relative z-10 mx-8 md:mx-16 border-t border-[#1E1E1E]"></div>
+    <div class="relative z-10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between px-8 py-8 md:px-16">
+      <p class="text-[13px] text-[#555] font-light">
+        Copyright &copy; 2024 BIB, Inc. | All Rights Reserved
+      </p>
+      <div class="flex items-center gap-6">
+        <a href="#" class="footer-link text-[13px] text-[#555] font-light">
+          Terms of Service
+        </a>
+        <a href="#" class="footer-link text-[13px] text-[#555] font-light">
+          Privacy Policy
+        </a>
+      </div>
+    </div>
+
+  </footer>
+
+</body>
+</html>
